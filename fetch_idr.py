@@ -319,8 +319,11 @@ def export_html(studies: list[dict], path: Path):
             elif j == 14 and val:
                 escaped = f'<a href="{html.escape(val)}" target="_blank" title="Open in OMERO">View</a>'
 
-            if j == 8 and lic:
-                cells.append(f'<td style="background:{bg};font-weight:600">{escaped}</td>')
+            if j == 8:
+                if lic:
+                    cells.append(f'<td style="background:{bg};font-weight:600">{escaped}</td>')
+                else:
+                    cells.append('<td style="background:#e53935;color:#fff;font-weight:700;text-align:center">NO LICENSE</td>')
             else:
                 cells.append(f"<td>{escaped}</td>")
 
