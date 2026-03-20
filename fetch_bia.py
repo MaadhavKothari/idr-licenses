@@ -43,13 +43,15 @@ LICENSE_CHART_COLORS = {
 
 
 def fetch_all_accessions() -> list[dict]:
-    """Fetch all study accessions from BioImage Archive search API."""
+    """Fetch all S-BIAD study accessions from BioImage Archive search API."""
     all_hits = []
     page = 1
     while True:
-        url = f"{BASE_URL}/BioImages/search"
+        # Use collection=BioImages to get only S-BIAD studies (not EMPIAR/S-BSST)
+        url = f"{BASE_URL}/search"
+        params = {"collection": "BioImages", "pageSize": 100, "page": page}
         print(f"  Fetching page {page}...", end=" ", flush=True)
-        resp = requests.get(url, params={"pageSize": 100, "page": page}, timeout=30)
+        resp = requests.get(url, params=params, timeout=30)
         resp.raise_for_status()
         data = resp.json()
         hits = data.get("hits", [])
@@ -247,10 +249,8 @@ def export_html(studies: list[dict], path: Path):
     org_values = json.dumps([v for _, v in top_organisms])
 
     total = len(studies)
-    n_biad = collection_counts.get("BioImage Archive", 0)
-    n_empiar = collection_counts.get("EMPIAR", 0)
-    n_other = total - n_biad - n_empiar
     n_licensed = sum(1 for s in studies if s.get("license"))
+    n_with_organism = sum(1 for s in studies if s.get("organism"))
 
     # Build table rows
     table_rows = []
@@ -345,14 +345,14 @@ def export_html(studies: list[dict], path: Path):
 <body>
 <div class="nav"><a href="index.html">&larr; Back to IDR Catalog</a></div>
 <h1>BioImage Archive License Catalog</h1>
-<p class="subtitle">EMBL-EBI BioImage Archive &mdash; {total} studies ({n_biad} S-BIAD, {n_empiar} EMPIAR, {n_other} other) &mdash; generated {time.strftime("%Y-%m-%d %H:%M")} &mdash; click chart segments to filter</p>
+<p class="subtitle">EMBL-EBI BioImage Archive (S-BIAD collection) &mdash; {total} studies &mdash; generated {time.strftime("%Y-%m-%d %H:%M")} &mdash; click chart segments to filter</p>
 
 <div class="stats">
   <div class="stat-card"><div class="number">{total}</div><div class="label">Total Studies</div></div>
-  <div class="stat-card"><div class="number">{n_biad}</div><div class="label">S-BIAD</div></div>
-  <div class="stat-card"><div class="number">{n_empiar}</div><div class="label">EMPIAR</div></div>
   <div class="stat-card"><div class="number">{n_licensed}</div><div class="label">Have License</div></div>
   <div class="stat-card"><div class="number">{total - n_licensed}</div><div class="label">No License</div></div>
+  <div class="stat-card"><div class="number">{n_with_organism}</div><div class="label">Have Organism</div></div>
+  <div class="stat-card"><div class="number">{len(organism_counts) - (1 if '(unknown)' in organism_counts else 0)}</div><div class="label">Unique Organisms</div></div>
 </div>
 
 <div class="charts">
