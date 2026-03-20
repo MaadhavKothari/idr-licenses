@@ -18,7 +18,7 @@ CACHE_PATH = Path(__file__).parent / "bia_studies_cache.json"
 HEADERS = [
     "Accession", "Title", "Collection", "Organism", "Imaging Method",
     "Keywords", "Files", "License", "Publication Title", "Publication DOI",
-    "Authors", "Release Date", "BIA Link",
+    "Data DOI", "Authors", "Release Date", "BIA Link",
 ]
 
 LICENSE_COLORS_CSS = {
@@ -209,6 +209,7 @@ def study_to_row(s: dict) -> list[str]:
         lic,
         s.get("pub_title", ""),
         s.get("pub_doi", ""),
+        s.get("doi", ""),
         authors,
         s.get("release_date", ""),
         bia_url(s.get("accession", "")),
@@ -272,14 +273,14 @@ def export_html(studies: list[dict], path: Path):
             # Title — also link
             elif j == 1 and val:
                 escaped = f'<a href="{html_mod.escape(link)}" target="_blank">{html_mod.escape(val)}</a>'
-            # DOI clickable
-            elif j == 9 and val:
+            # DOI clickable (Publication DOI = 9, Data DOI = 10)
+            elif j in (9, 10) and val:
                 doi = val.split()[0]
                 if not doi.startswith("http"):
                     doi = f"https://doi.org/{doi}"
                 escaped = f'<a href="{html_mod.escape(doi)}" target="_blank">{html_mod.escape(val.split()[0])}</a>'
             # BIA Link column
-            elif j == 12 and val:
+            elif j == 13 and val:
                 escaped = f'<a href="{html_mod.escape(val)}" target="_blank">View</a>'
 
             if j == 7:
