@@ -179,7 +179,7 @@ def normalize_license(raw: str) -> str:
 
 def bia_url(accession: str) -> str:
     """Build the BioImage Archive URL for a study."""
-    return f"https://www.ebi.ac.uk/bioimage-archive/galleries/{accession}"
+    return f"https://www.ebi.ac.uk/biostudies/BioImages/studies/{accession}"
 
 
 def collection_type(accession: str) -> str:
