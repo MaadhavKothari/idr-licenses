@@ -378,6 +378,7 @@ def export_html(studies: list[dict], path: Path):
 </style>
 </head>
 <body>
+<div class="nav" style="margin-bottom:16px"><a href="../index.html" style="color:#1a73e8;font-size:14px">&larr; All Catalogs</a> &nbsp;|&nbsp; <a href="bia_studies.html" style="color:#1a73e8;font-size:14px">BioImage Archive Catalog &rarr;</a></div>
 <h1>IDR Study License Catalog</h1>
 <p class="subtitle">Image Data Resource &mdash; {total} studies ({n_projects} projects, {n_screens} screens) &mdash; generated {time.strftime("%Y-%m-%d %H:%M")} &mdash; click chart segments to filter</p>
 

@@ -1,4 +1,4 @@
-name: Update IDR Studies
+name: Update Bioimaging License Catalogs
 
 on:
   schedule:
@@ -12,6 +12,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -22,20 +23,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Fetch IDR studies and export
+      - name: Fetch IDR studies
         run: python fetch_idr.py --refresh
 
-      - name: Copy report to index.html
-        run: cp output/idr_studies.html index.html
+      - name: Fetch BioImage Archive studies
+        run: python fetch_bia.py --refresh
 
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html output/idr_studies.html output/idr_studies.csv
+          git add index.html output/
           if git diff --cached --quiet; then
             echo "No changes detected"
           else
-            git commit -m "Update IDR studies data ($(date -u +%Y-%m-%d))"
+            git commit -m "Update license catalogs ($(date -u +%Y-%m-%d))"
             git push
           fi
