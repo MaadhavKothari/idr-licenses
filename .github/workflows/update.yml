@@ -29,6 +29,9 @@ jobs:
       - name: Fetch BioImage Archive studies
         run: python fetch_bia.py --refresh
 
+      - name: Build combined view
+        run: python build_combined.py
+
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
